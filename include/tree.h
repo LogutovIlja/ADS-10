@@ -1,77 +1,70 @@
 // Copyright 2022 NNTU-CS
 #ifndef INCLUDE_TREE_H_
 #define INCLUDE_TREE_H_
-#pragma once
-#pragma once
-#include<iostream>
 #include <vector>
 #include <string>
+
 class Tree {
  private:
-  struct list {
+  struct Node {
     char value;
-    std::vector <list> dop_list;
+    std::vector<Node*> leaf;
   };
+  Node* root;
 
-  list* root = nullptr;
-  std::vector<char> perestanovki;
-  int currentPerestanovka = 0;
-  int needPerestanovka = 0;
-
-  std::vector<char> deleteElem(std::vector<char> array, char value) {
-    std::vector<char> newVector;
-    for (int i = 0; i < array.size(); i++) {
-      if (array[i] != value) {
-        newVector.push_back(array[i]);
-      }
+  std::vector<std::string> perm;
+  void permutation(Node* root, std::string sym = "") {
+    if (!root->leaf.size()) {
+      sym += root->value;
+      perm.push_back(sym);
     }
-    return newVector;
+    if (root->value != '*') {
+      sym += root->value;
+    }
+    for (size_t i = 0; i < root->leaf.size(); i++) {
+      permutation(root->leaf[i], sym);
+    }
   }
 
-  std::vector<list> createlist(std::vector<char> vec, list* head) {
-    std::vector<list> tmp_v;
-    for (int i = 0; i < vec.size(); i++) {
-      list* tmp = new list;
-      tmp->value = vec[i];
-      tmp->dop_list = createlist(deleteElem(vec, vec[i]), tmp);
-      tmp_v.push_back(*tmp);
+  void buildTree(Node* root, std::vector<char> path) {
+    if (!path.size()) {
+      return;
     }
-    return tmp_v;
-  }
-
-  std::string getElem(list* current, std::string trace) {
-    if (current->value != '*') {
-      trace += current->value;
-    }
-    for (int i = 0; i < current->dop_list.size(); i++) {
-      getElem(&current->dop_list[i], trace);
-    }
-    if (trace.length() == root->dop_list.size()
-       && currentPerestanovka == needPerestanovka - 1 && perestanovki.empty()) {
-      for (int i = 0; i < trace.length(); i++) {
-        perestanovki.push_back(trace[i]);
+    if (root->value != '*') {
+      for (auto i = path.begin(); i != path.end(); i++) {
+        if (*i == root->value) {
+          path.erase(i);
+          break;
+        }
       }
-    } else if (trace.length() == root->dop_list.size()) {
-      currentPerestanovka++;
     }
-    return trace;
+    for (size_t i = 0; i < path.size(); i++) {
+      root->leaf.push_back(new Node);
+    }
+    for (size_t i = 0; i < root->leaf.size(); ++i) {
+      root->leaf[i]->value = path[i];
+    }
+    for (size_t i = 0; i < root->leaf.size(); ++i) {
+      buildTree(root->leaf[i], path);
+    }
   }
 
  public:
-    explicit Tree(std::vector<char> vec) {
-    root = new list;
-    root->value = '*';
-    root->dop_list = createlist(vec, root);
+  std::string operator[](int i) const {
+    if (i >= perm.size()) {
+      return "";
+    }
+    return perm[i];
   }
-
-  std::vector<char> getPerm(int n) {
-    needPerestanovka = n;
-    getElem(root, "");
-    std::vector<char> result = perestanovki;
-    perestanovki.clear();
-    currentPerestanovka = 0;
-    return result;
+  explicit Tree(std::vector<char> value) {
+    root = new Node();
+    root->value = '*';
+    buildTree(root, value);
+    permutation(root);
   }
 };
+
+
+
 
 #endif  // INCLUDE_TREE_H_
