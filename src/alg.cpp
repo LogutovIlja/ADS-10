@@ -5,6 +5,14 @@
 #include  <cstdlib>
 #include  "tree.h"
 
+using namespace std;
+
 std::vector<char> getPerm(const Tree& tree, int n) {
-  // напишите реализацию
+  string Razm = tree[n - 1];
+  vector<char> Kol;
+  int i;
+  for (i = 0; i < Razm.length(); i++) {
+    Kol.push_back(Razm[i]);
+  }
+  return Kol;
 }
