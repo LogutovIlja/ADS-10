@@ -5,11 +5,10 @@
 #include  <cstdlib>
 #include  "tree.h"
 
-using namespace std;
 
 std::vector<char> getPerm(const Tree& tree, int n) {
-  string Razm = tree[n - 1];
-  vector<char> Kol;
+  std::string Razm = tree[n - 1];
+  std::vector<char> Kol;
   int i;
   for (i = 0; i < Razm.length(); i++) {
     Kol.push_back(Razm[i]);
